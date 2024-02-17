@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         Audible Virtual Voice Modifier
 // @namespace    https://www.briansbookblog.com
-// @version      0.33
+// @version      0.34
 // @description  Remove Virtual Voice from Audible.com's browsing pages.
 // @author       Brian @ briansbookblog.com
 // @match        https://www.audible.com/*
@@ -16,23 +16,28 @@
     const checkboxId = 'enableCheckbox';
 
     function modifyURL() {
-        const checkbox = document.getElementById(checkboxId);
+    const checkbox = document.getElementById(checkboxId);
 
-        if (checkbox) {
-            const currentUrl = window.location.href;
+    if (checkbox) {
+        const currentUrl = new URL(window.location.href);
+        const keywordsParam = currentUrl.searchParams.get('keywords');
+        const isChecked = checkbox.checked;
 
-           if (currentUrl.includes("&keywords=-virtual_voice")) {
-               checkbox.checked = true;
+        if (isChecked) {
+            if (keywordsParam && !keywordsParam.includes("-virtual_voice")) {
+                currentUrl.searchParams.set('keywords', keywordsParam + ' -virtual_voice');
             } else {
-                checkbox.checked = false;
+                currentUrl.searchParams.set('keywords', '-virtual_voice');
             }
-
-            if (checkbox.checked && !currentUrl.includes("/pd/")) {
-                const modifiedUrl = currentUrl + "&keywords=-virtual_voice";
-                window.location.href = modifiedUrl;
+        } else {
+            if (keywordsParam && keywordsParam.includes("-virtual_voice")) {
+                currentUrl.searchParams.set('keywords', keywordsParam.replace(/-virtual_voice/g, ''));
             }
         }
+
+        window.location.href = currentUrl.toString();
     }
+}
 
     function addCheckbox() {
         const checkbox = document.createElement('input');
@@ -43,7 +48,6 @@
         const label = document.createElement('label');
         label.appendChild(checkbox);
         label.appendChild(document.createTextNode(' Remove Virtual Voice'));
-
         label.addEventListener('change', modifyURL);
 
         // Insert the heading with the ID 'a-virtualvoice' and inherit padding/style
