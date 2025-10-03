@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         Audible Virtual Voice Remover
 // @namespace    https://www.briansbookblog.com
-// @version      0.34
+// @version      1.0.0
 // @description  Remove Virtual Voice from Audible.com's browsing pages.
 // @author       Brian @ briansbookblog.com
 // @match        https://www.audible.com/*
@@ -13,57 +13,44 @@
  
 (function() {
     'use strict';
- 
-    const checkboxId = 'enableCheckbox';
- 
-    function modifyURL() {
-    const checkbox = document.getElementById(checkboxId);
- 
-    if (checkbox) {
-        const currentUrl = new URL(window.location.href);
-        const keywordsParam = currentUrl.searchParams.get('keywords');
-        const isChecked = checkbox.checked;
- 
-        if (isChecked) {
-            if (keywordsParam && !keywordsParam.includes("-virtual_voice")) {
-                currentUrl.searchParams.set('keywords', keywordsParam + ' -virtual_voice');
-            } else {
-                currentUrl.searchParams.set('keywords', '-virtual_voice');
-            }
-        } else {
-            if (keywordsParam && keywordsParam.includes("-virtual_voice")) {
-                currentUrl.searchParams.set('keywords', keywordsParam.replace(/-virtual_voice/g, ''));
-            }
+
+    if (window.top !== window.self) {
+        return;
+    }
+
+    const narratorFilterValue = '-virtual';
+
+    function ensureNarratorFilter() {
+        if (!window.location.pathname.includes('/search')) {
+            return;
         }
- 
-        window.location.href = currentUrl.toString();
+
+        const url = new URL(window.location.href);
+        const narratorParams = url.searchParams.getAll('narrator');
+        const hasVirtualFilter = narratorParams.some((param) => {
+            return param.split(',').map((value) => value.trim()).includes(narratorFilterValue);
+        });
+
+        if (!hasVirtualFilter) {
+            url.searchParams.set('narrator', narratorFilterValue);
+            window.location.replace(url.toString());
+        }
     }
-}
- 
-    function addCheckbox() {
-        const checkbox = document.createElement('input');
-        checkbox.type = 'checkbox';
-        checkbox.id = checkboxId;
-        checkbox.style.marginRight = '5px';
- 
-        const label = document.createElement('label');
-        label.appendChild(checkbox);
-        label.appendChild(document.createTextNode(' Remove Virtual Voice'));
-        label.addEventListener('change', modifyURL);
- 
-        const heading = document.createElement('h2');
-        heading.id = 'a-virtualvoice';
-        heading.className = 'bc-text bc-pub-relative bc-accordion-header-text bc-size-base bc-text-bold bc-box bc-box-padding-mini bc-accordion-header-inner bc-accordion-header-content';
-        heading.appendChild(document.createTextNode('Virtual Voice'));
- 
- 
-        const parentElement = document.querySelector('#left-1 > form > section > div.bc-accordion.bc-color-border-base.bc-accordion-borderless.bc-accordion-icon-position-');
-        if (parentElement) {
-            parentElement.insertBefore(label, parentElement.firstChild);
-            parentElement.insertBefore(heading, parentElement.firstChild);
-}
- 
-    }
- 
-    addCheckbox();
+
+    const originalPushState = history.pushState;
+    const originalReplaceState = history.replaceState;
+
+    history.pushState = function(...args) {
+        originalPushState.apply(this, args);
+        ensureNarratorFilter();
+    };
+
+    history.replaceState = function(...args) {
+        originalReplaceState.apply(this, args);
+        ensureNarratorFilter();
+    };
+
+    window.addEventListener('popstate', ensureNarratorFilter);
+
+    ensureNarratorFilter();
 })();

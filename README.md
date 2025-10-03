@@ -1,6 +1,6 @@
 # Audible Virtual Voice Modifier
 
-This userscript removes "Virtual Voice" AI-Generated audiobooks from Audible.com's browsing pages by adding a checkbox to toggle the removal of the "Virtual Voice" keyword from the URL.
+This userscript removes "Virtual Voice" AI-Generated audiobooks from Audible.com's browsing pages by automatically appending the narrator filter `-virtual` to Audible search URLs.
 
 I've tested this on the US site, but it is currently set up to work with the UK and Canadian URLs as well, nothing should change with those, but any extra testing would be greatly appreciated.
 
@@ -16,11 +16,10 @@ To use this script, you'll need a userscript extension such as Tampermonkey or G
 
    [Install Audible Virtual Voice Modifier](https://greasyfork.org/en/scripts/487538-audible-virtual-voice-remover)
 
-3. Once the extension is installed and the script is enabled, visit Audible.com and you should see a checkbox labeled "Remove Virtual Voice". Checking this box will remove the "Virtual Voice" from the results, updating the page content accordingly.
+3. Once the extension is installed and the script is enabled, visit Audible.com and any search results will automatically exclude Virtual Voice audiobooks. To see Virtual Voice titles again, temporarily disable the script in your userscript manager.
 
 ## How it Works
 
-The script adds a checkbox to the Audible.com page that allows you to toggle the removal of the "Virtual Voice" keyword from the URL. When the checkbox is checked, the script appends `&keywords=-virtual_voice` to the URL, effectively removing "Virtual Voice" from the search results.
-Currently, you cannot remove the check (and remove the results). I am working on an update for that now.
+The script monitors Audible's search pages and ensures that the narrator filter `-virtual` is present in the URL. Whenever the filter is missing (for example, when navigating to a new search page), the script updates the URL to add `&narrator=-virtual`, which removes "Virtual Voice" results.
 
 Please note that this script is intended for personal use and may not work as expected on all pages or under all circumstances. Use at your own risk.
