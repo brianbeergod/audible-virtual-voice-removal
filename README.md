@@ -16,7 +16,12 @@ To use this script, you'll need a userscript extension such as Tampermonkey or G
 
    [Install Audible Virtual Voice Modifier](https://greasyfork.org/en/scripts/487538-audible-virtual-voice-remover)
 
-3. Once the extension is installed and the script is enabled, visit Audible.com and any search results will automatically exclude Virtual Voice audiobooks. To see Virtual Voice titles again, temporarily disable the script in your userscript manager.
+3. **Update October 2025:** I currently cannot log back into my GreasyFork account to upload new versions. If the hosted script is out of date, you can manually update it from this repository:
+   - Option A: Open `remove-virtual-voice.js`, copy the entire contents, and paste them into a new or existing userscript in your manager (Tampermonkey, Greasemonkey, etc.), then save.
+   - Option B: Create a new local userscript file in your manager and paste in the contents of `remove-virtual-voice.js` so the script updates immediately.
+   I will restore GreasyFork updates if I regain account access.
+
+4. Once the extension is installed (or manually updated) and the script is enabled, visit Audible.com and any search results will automatically exclude Virtual Voice audiobooks. To see Virtual Voice titles again, temporarily disable the script in your userscript manager.
 
 ## How it Works
 
